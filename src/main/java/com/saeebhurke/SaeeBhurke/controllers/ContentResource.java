@@ -1,10 +1,13 @@
 package com.saeebhurke.SaeeBhurke.controllers;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import javax.mail.MessagingException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -22,11 +26,16 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
-import com.saeebhurke.SaeeBhurke.filestorage.StorageService;
+import com.saeebhurke.SaeeBhurke.models.EmailMessage;
+import com.saeebhurke.SaeeBhurke.services.EmailService;
+import com.saeebhurke.SaeeBhurke.services.StorageService;
 
 @CrossOrigin
 @RestController
 public class ContentResource {
+
+	@Autowired
+	EmailService emailService;
 
 	@Autowired
 	private StorageService storageService;
@@ -148,6 +157,17 @@ public class ContentResource {
 		} else {
 			throw new RuntimeException("No images are uploaded in category = " + panelName);
 		}
+	}
+
+	@PostMapping("/sendemail")
+	public ResponseEntity<String> sendEmail(@RequestBody EmailMessage emailMessage) {
+		try {
+			emailService.sendmail(emailMessage);
+		} catch (MessagingException | IOException e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body("Error occured while sending email");
+		}
+		return ResponseEntity.ok().body("Email sent successfully");
 	}
 
 }

@@ -1,4 +1,4 @@
-package com.saeebhurke.SaeeBhurke.filestorage;
+package com.saeebhurke.SaeeBhurke.services;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -13,14 +13,15 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.util.FileSystemUtils;
 
 @Service
-public class StorageService {
+public class StorageServiceImpl implements StorageService {
 
 	private final Path rootLocation = Paths.get("photos");
 	private Path panel = null;
 	private Path gallery = null;
 	private String ipAddress = "localhost";
 
-	public void saveSmIpAddress() {
+	@SuppressWarnings("unused")
+	private void saveSmIpAddress() {
 		try {
 			InetAddress ip = InetAddress.getLocalHost();
 			this.ipAddress = ip.getHostAddress();
@@ -31,10 +32,12 @@ public class StorageService {
 
 	}
 
+	@Override
 	public String getSmIpAddress() {
 		return ipAddress;
 	}
 
+	@Override
 	public void storeFile(MultipartFile file, String panelName) {
 		try {
 			panel = Paths.get(panelName);
@@ -51,6 +54,7 @@ public class StorageService {
 		}
 	}
 
+	@Override
 	public void storeFile(MultipartFile file, String panelName, String galleryName) {
 		try {
 			panel = Paths.get(panelName);
@@ -77,6 +81,7 @@ public class StorageService {
 		}
 	}
 
+	@Override
 	public Resource loadFile(String filename, String panelname) {
 		try {
 			Path panelName = Paths.get(panelname);
@@ -92,6 +97,7 @@ public class StorageService {
 		}
 	}
 
+	@Override
 	public Resource loadFile(String filename, String panelname, String galleryname) {
 		try {
 			Path panelName = Paths.get(panelname);
@@ -108,10 +114,12 @@ public class StorageService {
 		}
 	}
 
+	@Override
 	public void deleteAll() {
 		FileSystemUtils.deleteRecursively(this.rootLocation.toFile());
 	}
 
+	@Override
 	public void init() {
 		try {
 			Files.createDirectory(this.rootLocation);
